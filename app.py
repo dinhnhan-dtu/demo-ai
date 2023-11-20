@@ -1,10 +1,8 @@
 from flask import Flask, request, jsonify
-import openai
+from openai import OpenAI
+client = OpenAI(api_key='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')
 
 app = Flask(__name__)
-
-# Set your OpenAI GPT-3 API key
-openai.api_key = 'YOUR_API_KEY'
 
 @app.route('/ask', methods=['POST'])
 def ask_question():
@@ -12,7 +10,7 @@ def ask_question():
     user_question = data['question']
 
     # GPT-3 API call to generate a response
-    response = openai.Completion.create(
+    response = client.completions.create(
         engine="text-davinci-003",
         prompt=user_question,
         temperature=0.7,
@@ -25,4 +23,4 @@ def ask_question():
     return jsonify({'answer': model_answer})
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(host='0.0.0.0', port=5000)
