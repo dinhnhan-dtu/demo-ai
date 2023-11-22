@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify
-import openai  # Fix import statement
+from decouple import config
+from openai import OpenAI
 
-client = openai.OpenAI(api_key='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')
+# Lấy API key từ biến môi trường
+api_key = config('OPENAI_API_KEY')
+
+client = OpenAI(api_key=api_key)
 
 app = Flask(__name__)
 
@@ -11,11 +15,11 @@ def ask_question():
     user_question = data['question']
 
     # GPT-3 API call to generate a response
-    response = client.Completion.create(  # Fix method name
-        engine="text-davinci-003",
-        prompt=user_question,
-        temperature=0.7,
-        max_tokens=150
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": user_question},
+        ]
     )
 
     # Extract the generated answer from GPT-3 response
