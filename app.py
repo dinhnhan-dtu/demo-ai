@@ -3,6 +3,7 @@ from decouple import config
 from openai import OpenAI
 
 # Lấy API key từ biến môi trường
+# export OPENAI_API_KEY='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'
 api_key = config('OPENAI_API_KEY')
 
 client = OpenAI(api_key=api_key)
@@ -22,8 +23,17 @@ def ask_question():
         ]
     )
 
-    # Extract the generated answer from GPT-3 response
-    model_answer = response['choices'][0]['text'].strip()
+    # Kiểm tra xem 'choices' có tồn tại trong response hay không
+    if 'choices' in response:
+        # Kiểm tra xem danh sách 'choices' có ít nhất một phần tử hay không
+        if len(response['choices']) > 0:
+            # Lấy giá trị 'text' từ phần tử đầu tiên của danh sách
+            model_answer = response['choices'][0].get('text', '').strip()
+            # Làm bất kỳ xử lý nào khác bạn cần với 'model_answer'
+        else:
+            model_answer = "No choices available in the response"
+    else:
+        model_answer = "No 'choices' field in the response"
 
     return jsonify({'answer': model_answer})
 
